@@ -1,0 +1,21 @@
+{
+  "reminders": [
+    {
+      "title": "Pagar factura",
+      "datetime": "2025-05-20T10:00",
+      "leadAmount": 1,
+      "leadUnit": "days",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "title": "Dentista",
+      "datetime": "2025-05-21T15:30"
+    },
+    {
+      "id": "15ea",
+      "title": "test",
+      "datetime": ""
+    }
+  ]
+}
