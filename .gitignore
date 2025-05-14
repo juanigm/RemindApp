@@ -1,68 +1,40 @@
+# Node.js / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/npm-debug.log*
+
+# Python / Backend
+backend/__pycache__/
+backend/.venv/
+backend/*.py[cod]
+backend/.env
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/deploy/
+
+# Terraform / Infraestructura
+infrastructure/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+infrastructure/aws/*
+
 # Logs
-logs
+logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Sistema operativo
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Build output
-dist/
-build/
-
-# Env files
-.env*
-!.env.example
-
-# IDEs and editors
+# VSCode / IDEs
 .vscode/
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-
-# macOS
-.DS_Store
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-
-# Optional npm cache directory
-.npm
-
-# OS files
-Thumbs.db
-
-# Python (si luego agregás FastAPI u otro backend)
-__pycache__/
-*.py[cod]
-env/
-venv/
+*.sw?
+node_modules
 
