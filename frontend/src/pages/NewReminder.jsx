@@ -12,15 +12,20 @@ export default function NewReminder() {
   const [datetime, setDatetime] = useState('')
   const [leadAmount, setLeadAmount] = useState(1)
   const [leadUnit, setLeadUnit] = useState('days')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const navigate = useNavigate()
 
   const handleSubmit = async e => {
     e.preventDefault()
+    if (!phoneNumber.trim()) {
+      return alert('Por favor ingresa un teléfono WhatsApp.')
+    }
     await createReminder({
       title,
       datetime,
       leadAmount: Number(leadAmount),
-      leadUnit
+      leadUnit,
+      phoneNumber
     })
     navigate('/dashboard')
   }
@@ -69,6 +74,17 @@ export default function NewReminder() {
               <MenuItem value="hours">Horas</MenuItem>
             </Select>
           </FormControl>
+
+          <TextField
+            label="Teléfono WhatsApp"
+            type="tel"
+            fullWidth
+            margin="normal"
+            value={phoneNumber}
+            onChange={e => setPhoneNumber(e.target.value)}
+            helperText="+34123456789"
+            required
+          />
 
           <Button
             type="submit"

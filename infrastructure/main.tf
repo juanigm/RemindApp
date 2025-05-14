@@ -105,8 +105,8 @@ resource "aws_lambda_function" "api" {
   handler          = "main.handler"
   runtime          = "python3.10"
   role             = aws_iam_role.lambda_exec.arn
-  filename         = "../backend/function2.zip"
-  source_code_hash = filebase64sha256("../backend/function2.zip")
+  filename         = "../backend/function.zip"
+  source_code_hash = filebase64sha256("../backend/function.zip")
 
   environment {
     variables = {

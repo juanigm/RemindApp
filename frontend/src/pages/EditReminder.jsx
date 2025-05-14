@@ -15,6 +15,7 @@ export default function EditReminder() {
   const [datetime, setDatetime] = useState('')      // deberá ser 'YYYY-MM-DDTHH:mm'
   const [leadAmount, setLeadAmount] = useState(1)
   const [leadUnit, setLeadUnit] = useState('days')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function EditReminder() {
         setDatetime(dtIso)
         setLeadAmount(r.lead_amount ?? r.leadAmount ?? 1)
         setLeadUnit(r.lead_unit ?? r.leadUnit ?? 'days')
+        setPhoneNumber(r.phone_number ?? '')
       })
       .catch(err => {
         console.error(err)
@@ -45,9 +47,10 @@ export default function EditReminder() {
     try {
       await updateReminder(id, {
         title,
-        datetime,                  // en ISO-local, FastAPI lo parsea bien
-        lead_amount: Number(leadAmount),
-        lead_unit: leadUnit
+        datetime,
+        leadAmount: Number(leadAmount),
+        leadUnit,
+        phoneNumber
       })
       navigate('/dashboard')
     } catch (err) {

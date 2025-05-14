@@ -11,6 +11,7 @@ import { deleteReminder } from '../services/api.js'
 
 export default function ReminderCard({ reminder, onDelete }) {
   const { id, title, datetime, leadAmount, leadUnit } = reminder
+  const { phone_number } = reminder
   const date = new Date(datetime).toLocaleString()
   const navigate = useNavigate()
 
@@ -30,6 +31,7 @@ export default function ReminderCard({ reminder, onDelete }) {
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Se enviará {leadAmount} {leadUnit === 'days' ? 'día(s)' : 'hora(s)'} antes
+          <br />📱 {phone_number}
         </Typography>
       </CardContent>
       <CardActions>

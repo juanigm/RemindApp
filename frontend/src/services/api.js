@@ -7,30 +7,42 @@ export async function getReminders() {
   return res.json();
 }
 
-export async function createReminder(reminder) {
+export async function createReminder({ title, datetime, leadAmount, leadUnit, phoneNumber }) {
+  const payload = {
+    title,
+    datetime,
+    lead_amount: leadAmount,
+    lead_unit: leadUnit,
+    phone_number: phoneNumber
+  };
   const res = await fetch(`${API_URL}/reminders`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(reminder)
+    body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error('Error creating reminder');
   return res.json();
 }
 
-export async function updateReminder(id, reminder) {
+export async function updateReminder(id, { title, datetime, leadAmount, leadUnit, phoneNumber }) {
+  const payload = {
+    title,
+    datetime,
+    lead_amount: leadAmount,
+    lead_unit: leadUnit,
+    phone_number: phoneNumber
+  };
   const res = await fetch(`${API_URL}/reminders/${id}`, {
-    method: 'PUT', // o PATCH según tu backend
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(reminder)
+    body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error('Error updating reminder');
   return res.json();
 }
 
 export async function deleteReminder(id) {
-  const res = await fetch(`${API_URL}/reminders/${id}`, {
-    method: 'DELETE'
-  });
+  const res = await fetch(`${API_URL}/reminders/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Error deleting reminder');
   return;
 }
