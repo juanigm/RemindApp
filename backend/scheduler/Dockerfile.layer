@@ -1,0 +1,24 @@
+# 1) Usamos la misma imagen Lambda Python
+FROM public.ecr.aws/lambda/python:3.10 AS builder
+
+WORKDIR /opt
+
+# Instala zip
+RUN yum install -y zip
+
+# 1.1) Copia solo tu requirements (solo Twilio)
+COPY requirements.txt .
+
+# 1.2) Instala Twilio en python/
+RUN pip install --no-cache-dir -r requirements.txt -t python
+
+# 1.3) Limpia tests y metadatos extra (opcional, para aligerar)
+RUN find python -type d -name "tests"      -exec rm -rf {} + \
+ && find python -type d -name "*.dist-info" -exec rm -rf {} +
+
+# 1.4) Empaqueta python/ en el layer ZIP
+RUN zip -r /tmp/twilio-layer.zip python
+
+# 2) Etapa final: solo traemos el ZIP
+FROM scratch
+COPY --from=builder /tmp/twilio-layer.zip /twilio-layer.zip

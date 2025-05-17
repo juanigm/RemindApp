@@ -19,6 +19,7 @@ infrastructure/.terraform/
 *.tfstate.*
 .terraform.lock.hcl
 infrastructure/aws/*
+*.tfvars
 
 # Logs
 logs/
@@ -37,4 +38,6 @@ Thumbs.db
 *.sln
 *.sw?
 node_modules
+
+*.zip
 

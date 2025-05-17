@@ -105,8 +105,11 @@ resource "aws_lambda_function" "api" {
   handler          = "main.handler"
   runtime          = "python3.10"
   role             = aws_iam_role.lambda_exec.arn
-  filename         = "../backend/function.zip"
-  source_code_hash = filebase64sha256("../backend/function.zip")
+  filename         = "../backend/function3.zip"
+  source_code_hash = filebase64sha256("../backend/function3.zip")
+
+  timeout      = 30    # antes era 3, ahora 30 segundos
+  memory_size  = 256   # opcional: un poco más de RAM ↗ también ayuda a acelerar las llamadas de red
 
   environment {
     variables = {
@@ -248,4 +251,92 @@ output "frontend_bucket_name" {
 output "frontend_url" {
   description = "Dominio de CloudFront para la SPA estática"
   value       = aws_cloudfront_distribution.frontend_distribution.domain_name
+}
+
+
+
+#Schduler
+
+resource "aws_lambda_layer_version" "twilio" {
+  layer_name          = "reminder-twilio"
+  compatible_runtimes = ["python3.10"]
+  filename            = "../backend/scheduler/twilio-layer.zip"
+}
+
+# 1) Archive del scheduler
+# data "archive_file" "scheduler_zip" {
+#   type        = "zip"
+#   source_dir  = "../backend"
+#   output_path = "../backend/scheduler/scheduler-code.zip"
+#   excludes    = ["**/.venv/**","**/__pycache__/**","**/deploy/api.zip"]
+# }
+
+# 2) IAM Role para el scheduler
+resource "aws_iam_role" "scheduler_role" {
+  name = "reminder-scheduler-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+}
+
+resource "aws_iam_role_policy" "scheduler_policy" {
+  name   = "reminder-scheduler-policy"
+  role   = aws_iam_role.scheduler_role.id
+  policy = data.aws_iam_policy_document.lambda_policy.json
+}
+
+# 3) Lambda function del scheduler
+resource "aws_lambda_function" "scheduler" {
+  function_name = "reminder-scheduler"
+  handler       = "scheduler.lambda_handler"
+  runtime       = "python3.10"
+  role          = aws_iam_role.scheduler_role.arn
+
+  filename         = "../backend/scheduler/scheduler2.zip"
+  source_code_hash = filebase64sha256("../backend/scheduler/scheduler2.zip")
+
+  timeout      = 30    # antes era 3, ahora 30 segundos
+  memory_size  = 256   # opcional: un poco más de RAM ↗ también ayuda a acelerar las llamadas de red
+
+  environment {
+    variables = {
+      DYNAMO_TABLE            = aws_dynamodb_table.reminders.name
+      TWILIO_ACCOUNT_SID      = var.twilio_account_sid
+      TWILIO_AUTH_TOKEN       = var.twilio_auth_token
+      TWILIO_WHATSAPP_FROM    = var.twilio_whatsapp_from
+    }
+  }
+
+#   layers = [
+#     aws_lambda_layer_version.twilio.arn,
+#   ]
+}
+
+# 4) EventBridge rule every 5 minutos
+resource "aws_cloudwatch_event_rule" "every_5_minutes" {
+  name                = "Every1Minute"
+  schedule_expression = "rate(1 minute)"
+}
+
+resource "aws_cloudwatch_event_target" "invoke_scheduler" {
+  rule      = aws_cloudwatch_event_rule.every_5_minutes.name
+  target_id = "scheduler"
+  arn       = aws_lambda_function.scheduler.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id  = "AllowEventBridgeInvokeScheduler"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.scheduler.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.every_5_minutes.arn
+}
+
+variable "twilio_account_sid" {
+  type = string
+}
+variable "twilio_auth_token" {
+  type = string
+  sensitive = true
+}
+variable "twilio_whatsapp_from" {
+  type = string
 }
